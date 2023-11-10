@@ -137,6 +137,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                     $reservation_date = $row2["reservation_date"];
                                                     $valid_id_file = $row2["valid_id_file"];
                                                     $room_id = $row2["room_id"];
+                                                    $id = $row2["id"];
 
                                                     $sql = "SELECT * from rooms where room_id = $room_id";
                                                     $result3 = mysqli_query($conn, $sql);
@@ -150,7 +151,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                     echo "<td>$email</td>";
                                                     echo "<td>$address</td>";
                                                     echo "<td><img src='$selfie_file' width='100' height='100'></td>";
-                                                    echo "<td><a href='#' class='btn btn-primary view-tenant' data-toggle='modal' data-target='#viewTenantModal' data-tenant-details='" . htmlspecialchars(json_encode($row2), ENT_QUOTES, 'UTF-8') . "'>View</a></td>";
+                                                    echo "<td><a href='#' class='btn btn-primary view-tenant' data-toggle='modal' data-target='#viewTenantModal' data-tenant-details='" . htmlspecialchars(json_encode($row2), ENT_QUOTES, 'UTF-8') . "'>View</a> <a href='#' class='btn btn-danger remove-tenant' data-toggle='modal' data-target='#removeTenantModal' data-tenant-id='$id'>Remove Tenant</a></td>";
                                                     echo "</tr>";
                                                 }
                                             }
@@ -199,6 +200,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div>
         </div>
     </div>
+    <div class="modal fade" id="removeTenantModal" tabindex="-1" role="dialog" aria-labelledby="removeTenantModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeTenantModalLabel">Remove Tenant</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove this tenant?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmRemoveTenantButton">Remove Tenant</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
@@ -237,6 +259,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 $("#tenantStatus").text(tenantDetails.status);
                 $("#selfieImage").attr("src", tenantDetails.selfie_file);
                 $("#validIdImage").attr("src", tenantDetails.valid_id_file);
+            });
+            // Handle the click event for the "Remove Tenant" button
+            $(".remove-tenant").on("click", function () {
+                var tenantId = $(this).data("tenant-id");
+                $("#confirmRemoveTenantButton").data("tenant-id", tenantId);
+            });
+
+            // Handle the confirmation to remove the tenant
+            $("#confirmRemoveTenantButton").on("click", function () {
+                var tenantId = $(this).data("tenant-id");
+
+                // Send an AJAX request to remove the tenant
+                $.ajax({
+                    type: "POST",
+                    url: "remove_tenant.php", // Replace with the actual removal script
+                    data: { tenant_id: tenantId },
+                    success: function (response) {
+                        // Handle the response from the server (e.g., reload the tenant list)
+                        location.reload(); // Reload the page or update the tenant list in another way
+                    }
+                });
             });
         });
     </script>

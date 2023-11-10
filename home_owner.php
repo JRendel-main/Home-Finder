@@ -129,7 +129,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             $result2 = mysqli_query($conn, $sql);
 
                                             while ($row2 = mysqli_fetch_assoc($result2)) {
-                                                $room_id = $row2["id"];
+                                                $user_id = $row2["id"];
                                                 $name = $row2["name"];
                                                 $contact = $row2["contact"];
                                                 $email = $row2["email"];
@@ -155,7 +155,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 echo "<td><a href='view_image.php?image=$selfie_file' target='_blank'>View</a></td>";
                                                 echo "<td><a href='view_image.php?image=$valid_id_file' target='_blank'>View</a></td>";
                                                 echo "<td><a href='view_image.php?image=$proof_of_payment_file' target='_blank'>View</a></td>";
-                                                echo "<td><a href='#' class='btn btn-success approve-room' data-toggle='modal' data-target='#approveRoomModal' data-room-id='$room_id'>Approve</a> <a href='#' class='btn btn-warning decline-room' data-toggle='modal' data-target='#declineRoomModal' data-room-id='$room_id'>Decline</a></td>";
+                                                echo "<td><a href='#' class='btn btn-success approve-room' data-toggle='modal' data-target='#approveRoomModal' data-room-id='$user_id'>Approve</a> <a href='#' class='btn btn-warning decline-room' data-toggle='modal' data-target='#declineRoomModal' data-room-id='$user_id'>Decline</a></td>";
                                                 echo "</tr>";
                                             }
                                         }
