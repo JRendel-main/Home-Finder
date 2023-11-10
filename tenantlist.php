@@ -116,49 +116,47 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </thead>
                                 <tbody>
                                     <?php
+                                    // Fetch room data first
                                     $sql = "SELECT room_id FROM rooms WHERE establishment_id = $id";
                                     $result = mysqli_query($conn, $sql);
 
-                                    // check if numrows
                                     if (mysqli_num_rows($result) > 0) {
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             $room_id = $row['room_id'];
 
                                             $sql = "SELECT * from reservations where room_id = $room_id and status = 'Approved'";
                                             $result2 = mysqli_query($conn, $sql);
-                                            if (mysqli_num_rows($result2) > 0) {
-                                                $row2 = mysqli_fetch_assoc($result2);
-                                                while ($row2 = mysqli_fetch_assoc($result2)) {
-                                                    $name = $row2["name"];
-                                                    $contact = $row2["contact"];
-                                                    $email = $row2["email"];
-                                                    $address = $row2["address"];
-                                                    $selfie_file = $row2["selfie_file"];
-                                                    $reservation_date = $row2["reservation_date"];
-                                                    $valid_id_file = $row2["valid_id_file"];
-                                                    $room_id = $row2["room_id"];
-                                                    $id = $row2["id"];
 
-                                                    $sql = "SELECT * from rooms where room_id = $room_id";
-                                                    $result3 = mysqli_query($conn, $sql);
-                                                    $row3 = mysqli_fetch_assoc($result3);
-                                                    $room_name = $row3["room_name"];
+                                            while ($row2 = mysqli_fetch_assoc($result2)) {
+                                                $name = $row2["name"];
+                                                $contact = $row2["contact"];
+                                                $email = $row2["email"];
+                                                $address = $row2["address"];
+                                                $selfie_file = $row2["selfie_file"];
+                                                $reservation_date = $row2["reservation_date"];
+                                                $valid_id_file = $row2["valid_id_file"];
+                                                $room_id = $row2["room_id"];
+                                                $id = $row2["id"];
 
-                                                    echo "<tr>";
-                                                    echo "<td>$room_name</td>";
-                                                    echo "<td>$name</td>";
-                                                    echo "<td>$contact</td>";
-                                                    echo "<td>$email</td>";
-                                                    echo "<td>$address</td>";
-                                                    echo "<td><img src='$selfie_file' width='100' height='100'></td>";
-                                                    echo "<td><a href='#' class='btn btn-primary view-tenant' data-toggle='modal' data-target='#viewTenantModal' data-tenant-details='" . htmlspecialchars(json_encode($row2), ENT_QUOTES, 'UTF-8') . "'>View</a> <a href='#' class='btn btn-danger remove-tenant' data-toggle='modal' data-target='#removeTenantModal' data-tenant-id='$id'>Remove Tenant</a></td>";
-                                                    echo "</tr>";
-                                                }
+                                                $sql = "SELECT * from rooms where room_id = $room_id";
+                                                $result3 = mysqli_query($conn, $sql);
+                                                $row3 = mysqli_fetch_assoc($result3);
+                                                $room_name = $row3["room_name"];
+
+                                                echo "<tr>";
+                                                echo "<td>$room_name</td>";
+                                                echo "<td>$name</td>";
+                                                echo "<td>$contact</td>";
+                                                echo "<td>$email</td>";
+                                                echo "<td>$address</td>";
+                                                echo "<td><img src='$selfie_file' width='100' height='100'></td>";
+                                                echo "<td><a href='#' class='btn btn-primary view-tenant' data-toggle='modal' data-target='#viewTenantModal' data-tenant-details='" . htmlspecialchars(json_encode($row2), ENT_QUOTES, 'UTF-8') . "'>View</a> <a href='#' class='btn btn-danger remove-tenant' data-toggle='modal' data-target='#removeTenantModal' data-tenant-id='$id'>Remove Tenant</a></td>";
+                                                echo "</tr>";
                                             }
                                         }
                                     } else {
-                                        // send empty array
-                                        $data = array();
+                                        // No rooms found
+                                        echo "No rooms found.";
                                     }
                                     ?>
                                 </tbody>

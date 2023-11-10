@@ -135,13 +135,13 @@ $id = $_SESSION['id'];
 
                                             if ($status == 'approved') {
                                                 $status = '<span class="badge badge-success">Approved</span>';
-                                                $actions = '<a class="dropdown-item view-room" href="viewRooms.php?id=' . $id . '">View Rooms</a>';
+                                                $actions = '<a class="dropdown-item view-room" href="viewRooms.php?id=' . $id . '">View Rooms</a> <a class="dropdown-item remove-establishment" href="#" data-establishment-id="' . $id . '">Remove</a>';
                                             } else if ($status == 'pending') {
                                                 $status = '<span class="badge badge-warning">Pending</span>';
                                                 $actions = '<a class="dropdown-item approve-establishment" href="#" data-establishment-id="' . $id . '">Approve</a> <a class="dropdown-item decline-establishment" href="#" data-establishment-id="' . $id . '">Decline</a>';
                                             } else {
                                                 $status = '<span class="badge badge-danger">Rejected</span>';
-                                                $actions = '<a class="dropdown-item view-room" href="viewRooms.php?id=' . $id . '">View Rooms</a>';
+                                                $actions = '<a class="dropdown-item view-room" href="viewRooms.php?id=' . $id . '">View Rooms</a> <a class="dropdown-item remove-establishment" href="#" data-establishment-id="' . $id . '">Remove</a>';
                                             }
 
                                             $mapLinkBtn = '<a href="' . $map . '" class="btn btn-primary btn-sm" target="_blank">View Map</a>';
@@ -261,7 +261,23 @@ $id = $_SESSION['id'];
                     }
                 });
             });
-            
+
+            $(".remove-establishment").on("click", function () {
+                var establishmentId = $(this).data("establishment-id");
+                console.log(establishmentId);
+
+                // Send an AJAX request to declineEstablishment.php
+                $.ajax({
+                    type: "POST",
+                    url: "removeEstablishment.php",
+                    data: { establishment_id: establishmentId },
+                    success: function (response) {
+                        // Handle the response from the server (e.g., reload the establishment list)
+                        location.reload(); // Reload the page or update the establishment list in another way
+                    }
+                });
+            });
+
         });
     </script>
 
