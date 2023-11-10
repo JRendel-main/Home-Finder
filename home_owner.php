@@ -106,6 +106,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <div class="col-md-12">
                             <table id="requestlist" class="table table-hover">
                                 <thead>
+                                    <th>Room Name</th>
                                     <th>Full Name</th>
                                     <th>Contact</th>
                                     <th>Email</th>
@@ -123,10 +124,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     if (mysqli_num_rows($result) > 0) {
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             $room_id = $row['room_id'];
-                                    
+
                                             $sql = "SELECT * from reservations where room_id = $room_id and status = 'pending'";
                                             $result2 = mysqli_query($conn, $sql);
-                                    
+
                                             while ($row2 = mysqli_fetch_assoc($result2)) {
                                                 $room_id = $row2["id"];
                                                 $name = $row2["name"];
@@ -138,15 +139,22 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 $valid_id_file = $row2["valid_id_file"];
                                                 $proof_of_payment_file = $row2["proof_of_payment_file"];
                                                 $status = $row2["status"];
-                                    
+                                                $room_id = $row2["room_id"];
+
+                                                $sql2 = "SELECT * from rooms where room_id = $room_id";
+                                                $result3 = mysqli_query($conn, $sql2);
+                                                $row3 = mysqli_fetch_assoc($result3);
+                                                $room_name = $row3["room_name"];
+
                                                 echo "<tr>";
+                                                echo "<td>$room_name</td>";
                                                 echo "<td>$name</td>";
                                                 echo "<td>$contact</td>";
                                                 echo "<td>$email</td>";
                                                 echo "<td>$address</td>";
-                                                echo "<td><img src='$selfie_file' width='100' height='100'></td>";
-                                                echo "<td><img src='$valid_id_file' width='100' height='100'></td>";
-                                                echo "<td><img src='$proof_of_payment_file' width='170' height='400'></td>";
+                                                echo "<td><a href='view_image.php?image=$selfie_file' target='_blank'>View</a></td>";
+                                                echo "<td><a href='view_image.php?image=$valid_id_file' target='_blank'>View</a></td>";
+                                                echo "<td><a href='view_image.php?image=$proof_of_payment_file' target='_blank'>View</a></td>";
                                                 echo "<td><a href='#' class='btn btn-success approve-room' data-toggle='modal' data-target='#approveRoomModal' data-room-id='$room_id'>Approve</a> <a href='#' class='btn btn-warning decline-room' data-toggle='modal' data-target='#declineRoomModal' data-room-id='$room_id'>Decline</a></td>";
                                                 echo "</tr>";
                                             }

@@ -106,6 +106,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <div class="col-md-12">
                             <table id="requestlist" class="table table-hover">
                                 <thead>
+                                    <th>Room Name</th>
                                     <th>FullName</th>
                                     <th>Contact</th>
                                     <th>Email</th>
@@ -143,6 +144,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                     $room_name = $row3["room_name"];
 
                                                     echo "<tr>";
+                                                    echo "<td>$room_name</td>";
                                                     echo "<td>$name</td>";
                                                     echo "<td>$contact</td>";
                                                     echo "<td>$email</td>";

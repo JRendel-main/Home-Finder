@@ -134,11 +134,12 @@ function showSuccessMessage($message)
                 $id = $_GET['id'];
                 $result = mysqli_query($conn, "SELECT * FROM rooms WHERE establishment_id = $id");
 
-                $sql = ("SELECT contact, payment_details FROM account_establishment WHERE id = $id");
+                $sql = ("SELECT contact, payment_details, map FROM account_establishment WHERE id = $id");
                 $result2 = mysqli_query($conn, $sql);
                 $row2 = mysqli_fetch_array($result2);
                 $contact = $row2['contact'];
                 $payment_details = $row2['payment_details'];
+                $map = $row2['map'];
 
                 $roomCount = mysqli_num_rows($result); // Count the number of available rooms
                 
@@ -174,6 +175,12 @@ function showSuccessMessage($message)
                     echo 'No rooms yet';
                 }
                 ?>
+            </div>
+            <hr />
+            <div class="row">
+                <h3 class="text-center display-5">Location:</h3><br />
+                <!-- There is iframe here  -->
+                <?php echo $map; ?>
             </div>
         </div>
     </div>
