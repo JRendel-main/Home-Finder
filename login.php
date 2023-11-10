@@ -14,10 +14,15 @@ function login($email, $password) {
     $user = $result->fetch_assoc();
 
     if ($user && password_verify($password, $user['password'])) {
+      if ($user['status'] == 'pending') {
+        echo '<script>alert("Your account is still pending for approval")</script>';
+      } else {
         // Store user's email in the session
-        $_SESSION['email'] = $user['email'];
+        $_SESSION['id'] = $user['id'];
         header("Location: home_owner.php");
         exit();
+      }
+        
     } else {
         echo '<script>alert("Invalid username or password")</script>';
     }
@@ -70,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Password" name="password"required>
+          <input type="password" class="form-control" placeholder="Password" name="password" required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>

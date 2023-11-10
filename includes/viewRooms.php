@@ -1,4 +1,9 @@
 <?php
+session_start();
+
+// Include your database connection here
+include "includes/conn.php";
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $modal_room_id = $_POST["modal_room_id"];
     $name = sanitizeInput($_POST["name"]);
@@ -32,14 +37,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (move_uploaded_file($_FILES["valid_id"]["tmp_name"], $valid_id_file)) {
                     // Valid ID uploaded successfully, continue with the database insertion
 
-                    // Add the valid ID file directory to the database
-                    $sql = "INSERT INTO reservations (room_id, name, contact, email, address, selfie_file, valid_id_file)
-                            VALUES ('$modal_room_id', '$name', '$contact', '$email', '$address', '$selfie_file', '$valid_id_file')";
+                    // Handle file upload (proof of payment)
+                    $proof_of_payment_directory = "uploads/proof_of_payment/";
+                    if (!is_dir($proof_of_payment_directory)) {
+                        mkdir($proof_of_payment_directory, 0755, true);
+                    }
 
-                    if ($conn->query($sql) === TRUE) {
-                        showSuccessMessage("Your reservation has been submitted.");
+                    if (isset($_FILES["proof_of_payment"]) && $_FILES["proof_of_payment"]["error"] == UPLOAD_ERR_OK) {
+                        $proof_of_payment_file = $proof_of_payment_directory . basename($_FILES["proof_of_payment"]["name"]);
+
+                        if (move_uploaded_file($_FILES["proof_of_payment"]["tmp_name"], $proof_of_payment_file)) {
+                            // Proof of payment uploaded successfully, continue with the database insertion
+
+                            // Add the proof of payment file directory to the database
+                            $sql = "INSERT INTO reservations (room_id, name, contact, email, address, selfie_file, valid_id_file, proof_of_payment_file)
+                                    VALUES ('$modal_room_id', '$name', '$contact', '$email', '$address', '$selfie_file', '$valid_id_file', '$proof_of_payment_file')";
+
+                            if ($conn->query($sql) === TRUE) {
+                                showSuccessMessage("Your reservation has been submitted.");
+                            } else {
+                                handleError("Error: " . $sql . "<br>" . $conn->error);
+                            }
+                        } else {
+                            handleError("Failed to upload the proof of payment.");
+                        }
                     } else {
-                        handleError("Error: " . $sql . "<br>" . $conn->error);
+                        handleError("No proof of payment was uploaded.");
                     }
                 } else {
                     handleError("Failed to upload the valid ID.");
@@ -55,47 +78,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-function sanitizeInput($input) {
+function sanitizeInput($input)
+{
     // Perform any necessary sanitization here
     $input = htmlspecialchars($input);
     return $input;
 }
 
-function handleError($errorMessage) {
-    ?>
-    <script>
+function handleError($errorMessage)
+{
+    echo "<script>
         swal.fire({
-            title: "Error: <?php echo $errorMessage; ?>",
-            icon: "error",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK"
+            title: 'Error: " . $errorMessage . "',
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "index.php";
+                window.location.href = 'index.php';
             }
         });
-    </script>
-    <?php
+    </script>";
 }
 
-function showSuccessMessage($message) {
-    ?>
-    <script>
+function showSuccessMessage($message)
+{
+    echo "<script>
         swal.fire({
-            title: "Success!",
-            text: "<?php echo $message; ?>",
-            icon: "success",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK"
+            title: 'Success!',
+            text: '" . $message . "',
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "index.php";
+                window.location.href = 'index.php';
             }
         });
-    </script>
-    <?php
+    </script>";
 }
 ?>
+
 
 
 <div class="content-wrapper">
@@ -111,28 +134,25 @@ function showSuccessMessage($message) {
                 $id = $_GET['id'];
                 $result = mysqli_query($conn, "SELECT * FROM rooms WHERE establishment_id = $id");
 
-                $sql = ("SELECT contact FROM account_establishment WHERE id = $id");
+                $sql = ("SELECT contact, payment_details FROM account_establishment WHERE id = $id");
                 $result2 = mysqli_query($conn, $sql);
                 $row2 = mysqli_fetch_array($result2);
                 $contact = $row2['contact'];
+                $payment_details = $row2['payment_details'];
 
-                $row = mysqli_fetch_array($result);
-                if ($row) {
+                $roomCount = mysqli_num_rows($result); // Count the number of available rooms
+                
+                if ($roomCount > 0) {
                     while ($row = mysqli_fetch_array($result)) {
-                        // check how many reservations are there for this room
                         $room_id = $row['room_id'];
                         $max = $row['max'];
-
-                        // count the number of reservations for this room
                         $result2 = mysqli_query($conn, "SELECT * FROM reservations WHERE room_id = $room_id AND status = 'Approved'");
                         $row2 = mysqli_fetch_array($result2);
-                        // count the number of reservations for this room
                         $count = mysqli_num_rows($result2);
+                        $features = $row['features'];
                         $slots_left = $max - $count;
-
-                        // set button text depending on slots left
                         if ($slots_left > 0) {
-                            $button = '<a href="#" class="btn btn-primary" onclick="setRoomId(' . $room_id . ')" data-toggle="modal" data-target="#applyModal">Available ('.$slots_left.'/'.$max.')</a>';
+                            $button = '<a href="#" class="btn btn-primary" onclick="setRoomId(' . $room_id . ')" data-toggle="modal" data-target="#applyModal">Available (' . $slots_left . '/' . $max . ')</a>';
                         } else {
                             $button = '<button class="btn btn-danger" disabled>Full</button>';
                         }
@@ -144,7 +164,7 @@ function showSuccessMessage($message) {
                         echo '<div class="card-body">';
                         echo '<h5 class="card-title">' . $row['room_name'] . '</h5>';
                         echo '<p class="card-text">' . $row['max'] . ' Slots</p>';
-                        echo '<p class="card-text">Features: Wifi, Cabinet, Labahan</p>';
+                        echo '<p class="card-text">Features: ' . $features . '</p>';
                         echo $button;
                         echo '</div>';
                         echo '</div>';
@@ -159,7 +179,8 @@ function showSuccessMessage($message) {
     </div>
 </div>
 <!-- Add this modal structure at the end of your HTML body -->
-<div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="applyModalLabel" aria-hidden="true">
+<div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="applyModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -175,7 +196,15 @@ function showSuccessMessage($message) {
                     <div class="form-group">
                         <label for="name">Contact Number of Owner:</label>
                         <!-- Add a read only input that copyable when clicked -->
-                        <input type="text" class="form-control" id="name" name="name" value="<?php echo $contact; ?>" readonly>
+                        <input type="text" class="form-control" id="name" name="name" value="<?php echo $contact; ?>"
+                            readonly>
+                        <small id="contactHelp" class="form-text text-muted"><i>Click to copy.</i></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Payment Details:</label>
+                        <!-- Add a read only input that copyable when clicked -->
+                        <input type="text" class="form-control" id="name" name="name"
+                            value="<?php echo $payment_details; ?>" readonly>
                         <small id="contactHelp" class="form-text text-muted"><i>Click to copy.</i></small>
                     </div>
                     <div class="form-group">
@@ -186,7 +215,8 @@ function showSuccessMessage($message) {
                     <div class="form-group">
                         <label for="contact">Contact Number:</label>
                         <input type="text" class="form-control" id="contact" name="contact" required>
-                        <small id="contactHelp" class="form-text text-muted"><i>Make sure you enter valid number.</i></small>
+                        <small id="contactHelp" class="form-text text-muted"><i>Make sure you enter valid
+                                number.</i></small>
                     </div>
 
                     <div class="form-group">
@@ -207,6 +237,11 @@ function showSuccessMessage($message) {
                     <div class="form-group">
                         <label for="selfie">Picture of Valid ID (Upload):</label>
                         <input type="file" class="form-control-file" id="valid_id" name="valid_id" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="proof_of_payment">Proof of Payment (Upload):</label>
+                        <input type="file" class="form-control-file" id="proof_of_payment" name="proof_of_payment" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Reserve</button>
@@ -232,7 +267,8 @@ function showSuccessMessage($message) {
     .img-wrapper {
         overflow: hidden;
         border-radius: 8px 8px 0 0;
-        height: 200px; /* Adjust the height as needed */
+        height: 200px;
+        /* Adjust the height as needed */
     }
 
     .img-wrapper img {
@@ -245,13 +281,16 @@ function showSuccessMessage($message) {
     .card:hover .img-wrapper img {
         transform: scale(1.1);
     }
+
     .card-body {
         padding: 1rem;
     }
+
     .card-title {
         font-size: 1.25rem;
         font-weight: 500;
     }
+
     .modal-content {
         border-radius: 10px;
     }

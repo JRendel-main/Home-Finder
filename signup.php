@@ -1,28 +1,3 @@
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if a file was uploaded without errors
-    if (isset($_FILES["apartmentImage"]) && $_FILES["apartmentImage"]["error"] == 0) {
-        $targetDir = "uploads/"; // Specify the target directory where you want to save the uploaded image
-        $targetFile = $targetDir . basename($_FILES["apartmentImage"]["name"]);
-
-        // Check if the file already exists
-        if (file_exists($targetFile)) {
-            echo "File already exists.";
-        } else {
-            // Move the uploaded file to the target directory
-            if (move_uploaded_file($_FILES["apartmentImage"]["tmp_name"], $targetFile)) {
-                echo "The file " . htmlspecialchars(basename($_FILES["apartmentImage"]["name"])) . " has been uploaded.";
-                // 
-            } else {
-                echo "Sorry, there was an error uploading your file.";
-            }
-        }
-    } else {
-        echo "No file was uploaded.";
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,10 +25,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Register your apartment</p>
+                <?php
+                include 'includes/conn.php';
 
-                <form action="index.html" method="post">
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    // Sanitize and retrieve form data
+                    $email = mysqli_real_escape_string($conn, $_POST["email"]);
+                    $password = password_hash(mysqli_real_escape_string($conn, $_POST["password"]), PASSWORD_DEFAULT);
+                    $name = mysqli_real_escape_string($conn, $_POST["fullname"]);
+                    $price = mysqli_real_escape_string($conn, $_POST["starting_price"]);
+                    $address = mysqli_real_escape_string($conn, $_POST["address"]);
+                    $map = mysqli_real_escape_string($conn, $_POST["map"]);
+                    $contact = mysqli_real_escape_string($conn, $_POST["contact"]);
+                    $type = mysqli_real_escape_string($conn, $_POST["type"]);
+                    $payment_details = mysqli_real_escape_string($conn, $_POST["payment_details"]);
+
+                    // Handle file upload for "Image of apartment"
+                    $target_dir = "uploads/"; // Set your upload directory
+                    $target_file_cover = $target_dir . basename($_FILES["cover_photo"]["name"]);
+
+                    if (move_uploaded_file($_FILES["cover_photo"]["tmp_name"], $target_file_cover)) {
+                        // File uploaded successfully
+                    } else {
+                        echo "<div class='alert alert-danger'>Error uploading 'Image of apartment' file.</div>";
+                    }
+
+                    // Handle file upload for "Permit"
+                    $target_file_permit = $target_dir . basename($_FILES["permit_file"]["name"]);
+
+                    if (move_uploaded_file($_FILES["permit_file"]["tmp_name"], $target_file_permit)) {
+                        // File uploaded successfully
+                    } else {
+                        echo "<div class='alert alert-danger'>Error uploading 'Permit' file.</div>";
+                    }
+
+                    // Insert data into the database
+                    $status = "pending"; // Default status
+                    $sql = "INSERT INTO account_establishment (email, password, name, address, map, cover_photo, permit_file, price, status, contact, payment_details) 
+        VALUES ('$email', '$password', '$name', '$address', '$map', '$target_file_cover', '$target_file_permit', '$price', '$status', '$contact', '$payment_details')";
+
+                    if (mysqli_query($conn, $sql)) {
+                        echo "<div class='alert alert-success'>Data inserted successfully.</div>";
+                    } else {
+                        echo "<div class='alert alert-danger'>Error inserting data.</div>";
+                    }
+
+                    // Close the database connection
+                    mysqli_close($conn);
+                }
+                ?>
+
+                <form action="" method="post" enctype="multipart/form-data">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Full name">
+                        <input type="text" class="form-control" placeholder="Full name" name="fullname" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -61,7 +85,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Email">
+                        <!-- Contact number -->
+                        <input type="text" class="form-control" placeholder="Contact number" name="contact" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Email" name="email" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -69,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" placeholder="Password">
+                        <input type="password" class="form-control" placeholder="Password" name="password" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -77,7 +110,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" placeholder="Retype password">
+                        <input type="password" class="form-control" placeholder="Retype password" name="conf_password"
+                            required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -86,16 +120,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="input-group mb-3">
                         <!-- Starting price of apartment -->
-                        <input type="text" class="form-control" placeholder="Starting price of apartment">
+                        <input type="text" class="form-control" placeholder="Starting price of apartment"
+                            name="starting_price" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-money-bill"></span>
                             </div>
                         </div>
                     </div>
+                    <!-- Payment Details textarea-->
                     <div class="input-group mb-3">
-                        <!-- Address / google map link -->
-                        <input type="text" class="form-control" placeholder="Address / Google Map link">
+                        <textarea class="form-control" placeholder="Payment Details eg. GCASH - 09********* M.R" name="payment_details" required
+                            rows="3"></textarea>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-money-check-alt"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <!--google map link -->
+                        <input type="text" class="form-control" placeholder="Google Map Link" name="map" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-map-marker-alt"></span>
@@ -103,13 +148,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="exampleInputFile">
-                            <label class="custom-file-label" for="exampleInputFile">Upload Apartment Image</label>
+                        <!-- Address of apartment -->
+                        <input type="text" class="form-control" placeholder="Address of apartment" name="address"
+                            required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-map-marked-alt"></span>
+                            </div>
                         </div>
                     </div>
+                    <div class="input-group mb-3">
+                        <!-- Type of Apartment -->
+                        <select class="form-control" name="type" required>
+                            <option value="" disabled selected hidden>Type of Apartment</option>
+                            <option value="boarding_house">Boarding House</option>
+                            <option value="bedspace">Bedspace</option>
+                        </select>
+                    </div>
+                    <small class="text-muted">Upload permit document</small>
+                    <div class="input-group mb-3">
+                        <!-- Permit document -->
+                        <input type="file" class="form-control" placeholder="Permit document" name="permit_file"
+                            required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-file"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Upload image of apartment</small>
+                    <div class="input-group mb-3">
+                        <!-- Image of apartment -->
+                        <input type="file" class="form-control" placeholder="Image of apartment" name="cover_photo"
+                            required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-image"></span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
-                        <button type="submit" class="btn btn-lg btn-outline-success btn-block">Register</button>
+                        <button type="submit" class="btn btn-outline-success btn-block">Register</button>
                     </div>
                     <!-- /.col -->
             </div>

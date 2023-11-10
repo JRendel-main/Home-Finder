@@ -32,7 +32,7 @@
             <h2 class="text-center display-4">Search For Apartment</h2>
             <div class="row">
                 <div class="col-md-8 offset-md-2">
-                    <form action="simple-results.html">
+                    <form>
                         <div class="input-group">
                             <input type="search" class="form-control form-control-lg searchbar"
                                 placeholder="Enter keywords here">
@@ -56,12 +56,32 @@
                             <label for="minPrice">Min</label>
                             <label for="maxPrice">Max</label>
                             <input type="text" class="form-control form-control min" id="minPrice">
-                            <input type="text" class="form-control form-control max" id="maxPrice">
+                            <input type text" class="form-control form-control max" id="maxPrice">
                             <button class="btn btn-danger reset-btn">Reset</button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Add the checkboxes for apartment type selection -->
+                <div class="col-md-2">
+                    <h4>Apartment Type</h4>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="apartmentTypes[]" id="boardingType"
+                            value="boarding">
+                        <label class="form-check-label" for="boardingType">
+                            Boarding House
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="apartmentTypes[]" id="bedspaceType"
+                            value="bedspace">
+                        <label class="form-check-label" for="bedspaceType">
+                            Bedspace
+                        </label>
+                    </div>
+                </div>
             </div>
+
             <hr />
             <div class="row mt-2 border-0">
                 <?php
@@ -75,6 +95,15 @@
                         $price = $row['price'];
                         $name = $row['name'];
                         $address = $row['address'];
+                        $type = $row['type'];
+
+                        if ($type == 'boarding_house') {
+                            $type = 'Boarding';
+                        } else if ($type == 'bedspace') {
+                            $type = 'Bedspace';
+                        } else {
+                            $type = 'Unknown';
+                        }
                         $id = $row['id']; // Assuming 'id' is the primary key column in your database
                         ?>
                         <div class="col-md-3 mb-4 apartment" style="min-height: 300px;">
@@ -92,6 +121,10 @@
                                     <p class="card-p">
                                         PHP
                                         <?php echo $price; ?> per Month
+                                    </p>
+                                    <!-- Add here the type -->
+                                    <p class="card-p">
+                                        Type: <b><?php echo $type; ?></b>
                                     </p>
                                 </div>
                                 <div class="card-footer">

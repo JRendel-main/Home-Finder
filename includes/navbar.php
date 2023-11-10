@@ -34,7 +34,7 @@
                         <i class="fas fa-sign-in-alt mr-2"></i> Login Establishment Account
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a href="apply.php" class="dropdown-item">
+                    <a href="signup.php" class="dropdown-item">
                         <i class="fas fa-user mr-2"></i> Apply for Apartment
                     </a>
                 </div>
