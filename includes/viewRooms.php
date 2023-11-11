@@ -147,7 +147,7 @@ function showSuccessMessage($message)
                     while ($row = mysqli_fetch_array($result)) {
                         $room_id = $row['room_id'];
                         $max = $row['max'];
-                        $result2 = mysqli_query($conn, "SELECT * FROM reservations WHERE room_id = $room_id AND status = 'Approved'");
+                        $result2 = mysqli_query($conn, "SELECT * FROM reservations WHERE room_id = $room_id AND status = 'approved'");
                         $row2 = mysqli_fetch_array($result2);
                         $count = mysqli_num_rows($result2);
                         $features = $row['features'];

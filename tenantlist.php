@@ -124,7 +124,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             $room_id = $row['room_id'];
 
-                                            $sql = "SELECT * from reservations where room_id = $room_id and status = 'Approved'";
+                                            $sql = "SELECT * from reservations where room_id = $room_id and status = 'approved'";
                                             $result2 = mysqli_query($conn, $sql);
 
                                             while ($row2 = mysqli_fetch_assoc($result2)) {
@@ -154,9 +154,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 echo "</tr>";
                                             }
                                         }
-                                    } else {
-                                        // No rooms found
-                                        echo "No rooms found.";
                                     }
                                     ?>
                                 </tbody>
@@ -218,11 +215,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div>
         </div>
     </div>
-
-
-
-
-
     <!-- ./wrapper -->
 
     <!-- REQUIRED SCRIPTS -->
