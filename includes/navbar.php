@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand-md navbar-light navbar-light">
+<nav class="main-header navbar navbar-expand-md navbar-light navbar-danger">
     <div class="container">
         <a href="index3.html" class="navbar-brand">
             <img src="homefinder.jpg" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"

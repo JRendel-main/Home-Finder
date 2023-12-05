@@ -40,6 +40,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </head>
 
 <body class="hold-transition layout-top-nav">
+<style>
+    .content-wrapper {
+        /* Add background iamge */
+        background-image: url('images/bg.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+  </style>
     <div class="wrapper">
 
         <!-- Navbar -->
@@ -190,6 +199,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <p><strong>Valid ID Picture:</strong></p>
                         <img id="validIdImage" src="" alt="Valid ID Picture"
                             style="max-width: 100%; max-height: 200px;">
+                        <p><strong>Proof of Payment Picture:</strong></p>
+                        <img id="proofOfPaymentImage" src="" alt="Proof of Payment Picture"
+                            style="max-width: 100%; max-height: 200px;">
                     </div>
                 </div>
             </div>
@@ -249,6 +261,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 $("#tenantStatus").text(tenantDetails.status);
                 $("#selfieImage").attr("src", tenantDetails.selfie_file);
                 $("#validIdImage").attr("src", tenantDetails.valid_id_file);
+                $("#proofOfPaymentImage").attr("src", tenantDetails.proof_of_payment_file);
             });
             // Handle the click event for the "Remove Tenant" button
             $(".remove-tenant").on("click", function () {

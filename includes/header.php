@@ -17,4 +17,12 @@
 </head>
 
 <body class="hold-transition layout-top-nav">
+<style>
+    .content-wrapper {
+        background-image: url('images/bg.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+  </style>
     <div class="wrapper">

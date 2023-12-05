@@ -35,6 +35,14 @@ $id = $_SESSION['id'];
 </head>
 
 <body class="hold-transition layout-top-nav">
+    <style>
+        .content-wrapper {
+            background-image: url('images/bg.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
     <div class="wrapper">
 
         <!-- Navbar -->
@@ -92,12 +100,11 @@ $id = $_SESSION['id'];
                         <h5 class="text-body">Establishment List</h5><br />
                     </div>
                     <div class="row">
-                        <div class="col-mb-12 mt-3">
-                            <table id="requestlist" class="table table-hover" style="width: 100%">
+                        <div class="col-md-12 mt-3 justify-content-center">
+                            <table id="requestlist" class="table table-hover table-lg" style="width: 100%;">
                                 <thead>
                                     <th>Establishment Name</th>
                                     <th>Address</th>
-                                    <th>Map Link</th>
                                     <th>Photo Files</th>
                                     <th>Price</th>
                                     <th>Type</th>
@@ -144,11 +151,9 @@ $id = $_SESSION['id'];
                                                 $actions = '<a class="dropdown-item view-room" href="viewRooms.php?id=' . $id . '">View Rooms</a> <a class="dropdown-item remove-establishment" href="#" data-establishment-id="' . $id . '">Remove</a>';
                                             }
 
-                                            $mapLinkBtn = '<a href="' . $map . '" class="btn btn-primary btn-sm" target="_blank">View Map</a>';
                                             echo "<tr>";
                                             echo "<td>$name</td>";
                                             echo "<td>$address</td>";
-                                            echo '<td>' . $mapLinkBtn . '</td>';
                                             echo "<td>$images</td>";
                                             echo "<td>$price</td>";
                                             echo "<td>$type</td>";
@@ -165,6 +170,8 @@ $id = $_SESSION['id'];
 
                                             echo "</td>";
                                             echo "</tr>";
+                                            
+
                                         }
                                         ?>
                                         <?php
@@ -221,7 +228,10 @@ $id = $_SESSION['id'];
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
     <script>
         $(document).ready(function () {
-            $('#requestlist').DataTable();
+            $('#requestlist').DataTable({
+                // Make it responsive
+                responsive: true
+            });
             // Handle the click event for the "View Files" link
             $(".display-file").on("click", function () {
                 var coverPhotoPath = $(this).data("cover-photo");

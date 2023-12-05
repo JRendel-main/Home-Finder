@@ -35,6 +35,14 @@ $id = $_SESSION['id'];
 </head>
 
 <body class="hold-transition layout-top-nav">
+    <style>
+        .content-wrapper {
+      background-image: url('images/bg.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+    </style>
     <div class="wrapper">
 
         <!-- Navbar -->
@@ -105,7 +113,6 @@ $id = $_SESSION['id'];
                                     <th>Room Name</th>
                                     <th>Description</th>
                                     <th>Price</th>
-                                    <th>Room Image</th>
                                     <th>Max Tenant</th>
                                     <th>Features</th>
                                     <th>Action</th>
@@ -127,7 +134,6 @@ $id = $_SESSION['id'];
                                             echo "<td>$room_name</td>";
                                             echo "<td>$description</td>";
                                             echo "<td>$price</td>";
-                                            echo "<td><img src='$room_image' width='100' height='100'></td>";
                                             echo "<td>$max_tenant</td>";
                                             echo "<td>$features</td>";
                                             echo "<td><a href='#' class='btn btn-primary edit-room' data-toggle='modal' data-target='#editRoomModal' data-room-id='$row[room_id]'>Edit</a> <a href='#' class='btn btn-danger delete-room' data-toggle='modal' data-target='#deleteRoomModal' data-room-id='$row[room_id]'>Delete</a></td>";
@@ -173,12 +179,79 @@ $id = $_SESSION['id'];
                             <input type="number" class="form-control" id="max_tenant" name="max_tenant" required>
                         </div>
                         <div class="form-group">
-                            <label for="features">Features</label>
-                            <textarea class="form-control" id="features" name="features" required></textarea>
+                            <label for="features">Features</label><br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_airconditioned"
+                                    name="features[]" value="Air Conditioned">
+                                <label class="form-check-label" for="feature_airconditioned">Air Conditioned</label>
+                            </div>
+                            <!-- Wifi -->
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_airconditioned"
+                                    name="features[]" value="Wifi">
+                                <label class="form-check-label" for="feature_wifi">
+                                    Wifi
+                                </label>
+                            </div>
+                            <!-- Own CR -->
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_airconditioned"
+                                    name="features[]" value="Restroom">
+                                <label class="form-check-label" for="feature_restroom">
+                                    Private Restroom
+                                </label>
+                            </div>
+                            <!-- Rice cooker -->
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_airconditioned"
+                                    name="features[]" value="Rice Cooker">
+                                <label class="form-check-label" for="feature_ricecooker">
+                                    Rice Cooker
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_airconditioned"
+                                    name="features[]" value="Waching Machine">
+                                <label class="form-check-label" for="feature_machingmachine">
+                                    Washing Machine
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_tv" name="features[]"
+                                    value="TV">
+                                <label class="form-check-label" for="feature_tv">TV</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_fridge" name="features[]"
+                                    value="Refrigerator">
+                                <label class="form-check-label" for="feature_fridge">Refrigerator</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_microwave" name="features[]"
+                                    value="Microwave">
+                                <label class="form-check-label" for="feature_microwave">Microwave</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_parking" name="features[]"
+                                    value="Parking">
+                                <label class="form-check-label" for="feature_parking">Parking</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="feature_cctv" name="features[]"
+                                    value="Security">
+                                <label class="form-check-label" for="feature_cctv">CCTV</label>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="room_image">Room Image</label>
-                            <input type="file" class="form-control-file" id="room_image" name="room_image" required>
+                            <label for="other_features">Other Features</label>
+                            <textarea class="form-control" id="other_features" name="features[]"></textarea>
+                            <!-- Add little note here -->
+                            <small class="form-text text-muted">Separate each feature with a comma (,)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="room_images">Room Images</label>
+                            <input type="file" class="form-control-file" id="room_images" name="room_images[]" multiple
+                                required>
                         </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Add Room</button>
@@ -292,7 +365,7 @@ $id = $_SESSION['id'];
                 var roomId = $(this).data("room-id");
                 console.log(roomId);
                 $("#confirmDeleteButton").data("room-id", roomId);
-                
+
             });
 
             // Handle the confirmation to delete the room

@@ -55,6 +55,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 
 <body class="hold-transition login-page">
+    <style>
+        body {
+      background-image: url('images/bg.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+    </style>
     <div class="login-box">
         <div class="login-logo">
             <a href="index.php"><b>Home</b>Finder</a>
